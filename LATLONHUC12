@@ -1,0 +1,131 @@
+<doctype HTML>
+<html>
+<body>
+<p id="demo">Click the button to get your position:
+<button onclick="getLocation()">Locate Me</button></p>
+<div id="mapholder"></div>
+<script src="http://www.paqinteractive.com/infoBubble.js"></script>
+<script src="http://maps.google.com/maps/api/js?sensor=false"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
+var x=document.getElementById("demo");
+
+mapholder=document.getElementById('mapholder')
+  mapholder.style.height='650px';
+  mapholder.style.width='100%';
+
+  
+  var latlon = new google.maps.LatLng(40.1, -84.6);
+  var myOptions={
+  
+  center:latlon,zoom:8,
+  mapTypeId:google.maps.MapTypeId.ROADMAP,
+  mapTypeControl:false,
+  navigationControlOptions:{style:google.maps.NavigationControlStyle.SMALL}
+  };
+  
+  var map=new google.maps.Map(document.getElementById("mapholder"),myOptions);
+  
+  var mapObjectInfoWindow = null;
+  
+  google.maps.event.addListener(map, 'click', function(event)
+	{
+		var lat = event.latLng.lat();
+		var lon = event.latLng.lng();
+		
+		//var marker = new google.maps.Marker({position:event.latLng,map:map,title:"You clicked here!"});
+		var url = "http://www.paqinteractive.com/geos2.php?lat=" + lat + "&lon=" + lon + "&format=json";
+		
+		jQuery.ajax({
+			//jsonp: false,
+			//jsonpCallback: 'getJson',
+			type:'GET',
+			url: url,
+			async: true,
+			dataType: 'jsonp',
+			success: function(jsonObject){
+				var huc_12 = jsonObject.features[0].feature.huc_12;
+				var FIPS = jsonObject.features[0].feature.fips;
+				var information = '<div style="margin:10px; width:150px;"><b>Lat: </b>'+ lat + '<br /><b>Lon: </b>' + lon + '<br /><b>HUC 12: </b>' + huc_12 + '<br /> <b>FIPS: </b>' + FIPS + '</div>';
+				if (mapObjectInfoWindow != null)
+					{
+						mapObjectInfoWindow.close();
+					}
+				var infoBubble = new InfoBubble({
+					map:map,
+					content:information,
+					position: event.latLng,
+					shadowStyle: 1,
+					padding: 8,
+					backgroundColor: '#FFFFFF',
+					borderRadius: 12,
+					arrowSize: 24,
+					borderWidth: 1,
+					borderColor: '#193968',
+					disableAutoPan: true,
+					hideCloseButton: true,
+					arrowPosition: 30,
+					backgroundClassName: 'phoney',
+					arrowStyle: 2
+				});
+				infoBubble.open();
+				//map.setCenter(event.latLng);
+				mapObjectInfoWindow = infoBubble;
+			}
+		});
+	});
+
+
+function getLocation()
+  {
+  if (navigator.geolocation)
+    {
+    navigator.geolocation.getCurrentPosition(showPosition,showError);
+    }
+  else{x.innerHTML="Geolocation is not supported by this browser.";}
+  }
+
+
+function showPosition(position)
+  {
+  lat=position.coords.latitude;
+  lon=position.coords.longitude;
+  var latlon = new google.maps.LatLng(lat, lon);
+  var marker = new google.maps.Marker({position:latlon,map:map,title:"You are here!"});
+  map.setCenter(latlon);
+  map.setZoom(18);
+  }
+  
+
+function mapClicked(clickLoc)
+{
+	var lat = clickLoc.lat();
+	//var lon = clickLoc.lon();
+alert('You clicked the map at ');
+//Ajax location to HUC FIPS db and put result into a div.
+}
+  
+function showError(error)
+  {
+  switch(error.code) 
+    {
+    case error.PERMISSION_DENIED:
+      x.innerHTML="User denied the request for Geolocation."
+      break;
+    case error.POSITION_UNAVAILABLE:
+      x.innerHTML="Location information is unavailable."
+      break;
+    case error.TIMEOUT:
+      x.innerHTML="The request to get user location timed out."
+      break;
+    case error.UNKNOWN_ERROR:
+      x.innerHTML="An unknown error occurred."
+      break;
+    }
+  }
+  
+  
+  
+</script>
+</body>
+</html>
