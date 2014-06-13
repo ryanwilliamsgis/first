@@ -95,6 +95,7 @@
 				});
 				infoBubble.open();
 				mapObjectInfoWindow = infoBubble;
+			}
 		});
 	});
 
