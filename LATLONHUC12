@@ -67,9 +67,34 @@
 					arrowStyle: 2
 				});
 				infoBubble.open();
-				//map.setCenter(event.latLng);
 				mapObjectInfoWindow = infoBubble;
-			}
+			},
+			error: function(jsonObject){
+				
+				var information = '<div style="margin:10px; width:150px;"><b>Lat: </b>'+ lat + '<br /><b>Lon: </b>' + lon + '<br /> Other data not available here.</div>';
+				if (mapObjectInfoWindow != null)
+					{
+						mapObjectInfoWindow.close();
+					}
+				var infoBubble = new InfoBubble({
+					map:map,
+					content:information,
+					position: event.latLng,
+					shadowStyle: 1,
+					padding: 8,
+					backgroundColor: '#FFFFFF',
+					borderRadius: 12,
+					arrowSize: 24,
+					borderWidth: 1,
+					borderColor: '#193968',
+					disableAutoPan: true,
+					hideCloseButton: true,
+					arrowPosition: 30,
+					backgroundClassName: 'phoney',
+					arrowStyle: 2
+				});
+				infoBubble.open();
+				mapObjectInfoWindow = infoBubble;
 		});
 	});
 
