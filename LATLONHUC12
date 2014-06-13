@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <doctype HTML>
 <html>
 	<body>
@@ -30,10 +31,10 @@
 	{
 		var lat = event.latLng.lat();
 		var lon = event.latLng.lng();
-		
+
 		//var marker = new google.maps.Marker({position:event.latLng,map:map,title:"You clicked here!"});
 		var url = "http://www.paqinteractive.com/geos2.php?lat=" + lat + "&lon=" + lon + "&format=json";
-		
+
 		jQuery.ajax({
 			//jsonp: false,
 			//jsonpCallback: 'getJson',
@@ -42,9 +43,13 @@
 			async: true,
 			dataType: 'jsonp',
 			success: function(jsonObject){
-				var huc_12 = jsonObject.features[0].feature.huc_12;
-				var FIPS = jsonObject.features[0].feature.fips;
-				var information = '<div style="margin:10px; width:150px;"><b>Lat: </b>'+ lat + '<br /><b>Lon: </b>' + lon + '<br /><b>HUC 12: </b>' + huc_12 + '<br /> <b>FIPS: </b>' + FIPS + '</div>';
+				if (jsonObject.features.length > 0){
+					var huc_12 = jsonObject.features[0].feature.huc_12;
+					var FIPS = jsonObject.features[0].feature.fips;
+					var information = '<div style="margin:10px; width:150px;"><b>Lat: </b>'+ lat + '<br /><b>Lon: </b>' + lon + '<br /><b>HUC 12: </b>' + huc_12 + '<br /> <b>FIPS: </b>' + FIPS + '</div>';
+				} else {
+					var information = '<div style="margin:10px; width:150px;"><b>Lat: </b>'+ lat + '<br /><b>Lon: </b>' + lon + '<br /> Other data not available here.</div>';
+				}
 				if (mapObjectInfoWindow != null)
 					{
 						mapObjectInfoWindow.close();
@@ -70,8 +75,8 @@
 				mapObjectInfoWindow = infoBubble;
 			},
 			error: function(jsonObject){
-				
-				var information = '<div style="margin:10px; width:150px;"><b>Lat: </b>'+ lat + '<br /><b>Lon: </b>' + lon + '<br /> Other data not available here.</div>';
+
+				var information = '<div style="margin:10px; width:150px;"><b>Lat: </b>'+ lat + '<br /><b>Lon: </b>' + lon + '<br /> There was an error in your query...</div>';
 				if (mapObjectInfoWindow != null)
 					{
 						mapObjectInfoWindow.close();
